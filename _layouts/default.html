@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% seo %}
+  {% feed_meta %}
+  <meta name="theme-color" content="#0d0b17">
+</head>
+<body class="{{ page.body_class }}">
+  <div class="progress" id="progress"></div>
+  <header class="nav">
+    <div class="wrap nav-in">
+      <a class="brand" href="{{ '/' | relative_url }}">
+        <span class="brand-mark">&#9671;</span>{{ site.title }}
+      </a>
+      <nav>
+        <a href="{{ '/' | relative_url }}#posts">Writing</a>
+        <a href="{{ '/archive/' | relative_url }}">Archive</a>
+        <a href="{{ '/about/' | relative_url }}">About</a>
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>{{ content }}</main>
+
+  <footer class="foot">
+    <div class="wrap foot-in">
+      <span>&copy; {{ 'now' | date: '%Y' }} {{ site.author }}. Research is shared for education and authorized testing only.</span>
+      <span class="links">
+        {% if site.github %}<a href="https://github.com/{{ site.github }}">GitHub</a>{% endif %}
+        {% if site.twitter %}<a href="https://x.com/{{ site.twitter }}">X</a>{% endif %}
+        {% if site.linkedin %}<a href="https://linkedin.com/in/{{ site.linkedin }}">LinkedIn</a>{% endif %}
+      </span>
+    </div>
+  </footer>
+  <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+</body>
+</html>

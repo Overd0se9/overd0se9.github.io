@@ -1,4 +1,21 @@
-title: Personal Blog
-author: Mohamed Anwar aka OVERD0SE
-description: A blog about offensive security, ctfs, etc.
-theme: minima
+# ---- Edit these ----
+title: "overd0se"
+tagline: "Offensive security research, CTF write-ups, and CVE notes"
+description: "Red team techniques, vulnerability research, CVEs and CTF solutions."
+author: "Overd0se9"
+github: "Overd0se9"
+twitter: ""
+linkedin: ""
+email: ""
+# This is a user site (Overd0se9.github.io) — leave url/baseurl as shown.
+url: "https://overd0se9.github.io"
+baseurl: ""
+# --------------------
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:year/:month/:title/
+paginate: 0
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+exclude: [README.md, Gemfile, Gemfile.lock]

@@ -1,0 +1,61 @@
+---
+layout: default
+body_class: home
+---
+<section class="hero">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <h1>Breaking things<br>to learn how they hold.</h1>
+      <p>{{ site.tagline }}. Notes from real engagements, lab boxes and late nights reading disassembly.</p>
+      <div class="cta">
+        <a class="btn" href="#posts">Read the latest</a>
+        <a class="btn ghost" href="{{ '/about/' | relative_url }}">About me</a>
+      </div>
+      <dl class="stats">
+        <div><dt>{{ site.posts | size }}</dt><dd>write-ups</dd></div>
+        <div><dt>{{ site.posts | where: "category","cve" | size }}</dt><dd>CVEs</dd></div>
+        <div><dt>{{ site.posts | where: "category","ctf" | size }}</dt><dd>CTF solves</dd></div>
+      </dl>
+    </div>
+
+    <div class="term" aria-hidden="true">
+      <div class="term-bar"><i></i><i></i><i></i><span>operator@lab: ~</span></div>
+      <pre id="term"></pre>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="posts">
+  <div class="tools">
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All</button>
+      <button data-f="research">Research</button>
+      <button data-f="cve">CVEs</button>
+      <button data-f="ctf">CTF</button>
+      <button data-f="technique">Techniques</button>
+    </div>
+    <label class="search"><span class="sr">Search posts</span>
+      <input id="q" type="search" placeholder="Search posts, tags, CVE ids  ( / )" autocomplete="off">
+    </label>
+  </div>
+
+  <div class="cards" id="cards">
+    {% for post in site.posts %}
+    <a class="card k-{{ post.category }}" href="{{ post.url | relative_url }}"
+       data-cat="{{ post.category }}"
+       data-text="{{ post.title | downcase }} {{ post.tags | join: ' ' | downcase }} {{ post.cve | downcase }} {{ post.excerpt | strip_html | downcase | truncate: 200 }}">
+      <div class="card-top">
+        <span class="chip c-{{ post.category }}">{{ post.category }}</span>
+        {% if post.difficulty %}<span class="diff d-{{ post.difficulty | downcase }}">{{ post.difficulty }}</span>{% endif %}
+      </div>
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.excerpt | strip_html | truncatewords: 26 }}</p>
+      <div class="card-foot">
+        <time>{{ post.date | date: "%d %b %Y" }}</time>
+        <span>{% for t in post.tags limit: 3 %}#{{ t }} {% endfor %}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  <p class="empty" id="empty" hidden>Nothing matches. Try a broader term or clear the filter.</p>
+</section>

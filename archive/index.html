@@ -1,0 +1,16 @@
+---
+layout: default
+title: Archive
+---
+<section class="wrap page">
+  <h1>Archive</h1>
+  {% assign byyear = site.posts | group_by_exp: "p", "p.date | date: '%Y'" %}
+  {% for y in byyear %}
+  <h3 class="yr">{{ y.name }}</h3>
+  <ul class="arch">
+    {% for p in y.items %}
+    <li><time>{{ p.date | date: "%m-%d" }}</time><a href="{{ p.url | relative_url }}">{{ p.title }}</a><span class="chip c-{{ p.category }}">{{ p.category }}</span></li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</section>
