@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../consts';
+---
+
+<Base title="About">
+  <section class="wrap page prose">
+    <h1>About</h1>
+    <p>
+      I'm an offensive security engineer. I spend my time on red teaming, web and
+      infrastructure penetration testing, and vulnerability research.
+    </p>
+
+    <h2>What you'll find here</h2>
+    <ul>
+      <li><strong>Research</strong> — deep dives into bug classes and attack surface</li>
+      <li><strong>CVEs</strong> — disclosures, root-cause analysis, and patches</li>
+      <li><strong>CTF</strong> — write-ups with the dead ends left in</li>
+      <li><strong>Techniques</strong> — tradecraft, tooling, and detection notes</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>
+      Find me on <a href={SITE.github} target="_blank" rel="noopener">GitHub</a>.
+      PGP key and disclosure policy go here.
+    </p>
+
+    <blockquote>
+      Everything published here is for education and authorized testing. Get written
+      permission before you touch a system you don't own.
+    </blockquote>
+  </section>
+</Base>

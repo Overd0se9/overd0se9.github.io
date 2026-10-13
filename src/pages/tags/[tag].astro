@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostRow from '../../components/PostRow.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const tags = new Set<string>();
+  for (const p of posts) for (const t of p.data.tags) tags.add(t);
+
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Base title={`#${tag}`}>
+  <section class="wrap wrap-wide page">
+    <h1>#{tag}</h1>
+    <p style="color:var(--fg-dim)">{posts.length} post{posts.length === 1 ? '' : 's'} tagged <code>{tag}</code>. <a href="/tags">← all tags</a></p>
+    <ul class="posts">
+      {posts.map((post) => <PostRow post={post} />)}
+    </ul>
+  </section>
+</Base>

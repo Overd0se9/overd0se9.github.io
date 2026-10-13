@@ -1,0 +1,52 @@
+---
+import Base from './Base.astro';
+import { CATEGORIES } from '../consts';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  prev?: CollectionEntry<'posts'>;
+  next?: CollectionEntry<'posts'>;
+  readingTime: number;
+}
+const { post, prev, next, readingTime } = Astro.props;
+const { title, date, category, excerpt, tags, cve, platform, difficulty, updated } = post.data;
+const d = new Date(date);
+const iso = d.toISOString().slice(0, 10);
+---
+
+<Base title={title} description={excerpt}>
+  <article class="wrap article">
+    <header class="article-head">
+      <div class="meta">
+        <span class={`chip c-${category}`}>{CATEGORIES[category].label}</span>
+        <time datetime={iso}>{iso}</time>
+        <span>·</span>
+        <span>{readingTime} min read</span>
+        {cve && (<><span>·</span><span>{cve}</span></>)}
+        {platform && (<><span>·</span><span>{platform}{difficulty ? ` · ${difficulty}` : ''}</span></>)}
+      </div>
+      <h1>{title}</h1>
+      <p class="ex">{excerpt}</p>
+      {updated && <div class="meta" style="margin-top:0.8rem">updated {new Date(updated).toISOString().slice(0,10)}</div>}
+      {tags.length > 0 && (
+        <div class="tags">
+          {tags.map((t) => <a class="tag" href={`/tags/${t}/`}>#{t}</a>)}
+        </div>
+      )}
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+
+    <nav class="pager">
+      {prev ? (
+        <a class="prv" href={`/posts/${prev.id}/`}><small>← previous</small>{prev.data.title}</a>
+      ) : <span></span>}
+      {next && (
+        <a class="nxt" href={`/posts/${next.id}/`}><small>next →</small>{next.data.title}</a>
+      )}
+    </nav>
+  </article>
+</Base>

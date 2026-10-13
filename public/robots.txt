@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://overd0se9.github.io/sitemap-index.xml

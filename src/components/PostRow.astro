@@ -1,0 +1,27 @@
+---
+import { CATEGORIES } from '../consts';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { post: CollectionEntry<'posts'>; }
+const { post } = Astro.props;
+const { title, date, category, excerpt, tags } = post.data;
+const d = new Date(date);
+const iso = d.toISOString().slice(0, 10);
+const searchBlob = [title, excerpt, category, post.data.cve ?? '', tags.join(' ')].join(' ').toLowerCase();
+---
+
+<li class="post-row" data-cat={category} data-search={searchBlob}>
+  <time datetime={iso}>{iso}</time>
+  <div class="pr-main">
+    <a href={`/posts/${post.id}/`} style="text-decoration:none">
+      <p class="pr-title">{title}</p>
+    </a>
+    <p class="pr-ex">{excerpt}</p>
+    {tags.length > 0 && (
+      <div class="pr-tags">
+        {tags.slice(0, 5).map((t) => <a class="tag" href={`/tags/${t}/`}>#{t}</a>)}
+      </div>
+    )}
+  </div>
+  <span class={`chip c-${category}`}>{CATEGORIES[category].label}</span>
+</li>

@@ -1,11 +1,11 @@
 ---
-layout: post
 title: "HTB Escapade: from a leaked SMB share to domain root"
+date: 2026-09-14
 category: ctf
-platform: Hack The Box
-difficulty: Hard
-tags: [active-directory, kerberos, smb, adcs, windows]
+platform: "Hack The Box"
+difficulty: "Hard"
 excerpt: "An anonymous SMB share leaks a password policy script, which leads through Kerberos pre-auth abuse and a misconfigured certificate template straight to Domain Admin."
+tags: [active-directory, kerberos, smb, adcs, windows]
 ---
 
 ## Recon
