@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import PostRow from '../components/PostRow.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '../consts';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const count = (c: string) => posts.filter((p) => p.data.category === c).length;
+---
+
+<Base>
+  <section class="hero">
+    <div class="hero-in">
+      <div class="hero-copy">
+        <h1>Breaking things<br />to learn how they <span class="glow">hold</span>.</h1>
+        <p>{SITE.tagline}. Notes from real engagements, lab boxes, and late nights reading disassembly.</p>
+        <div class="cta">
+          <a class="btn" href="#posts">Read the latest</a>
+          <a class="btn ghost" href="/about">About me</a>
+        </div>
+        <dl class="stats">
+          <div><dt>{posts.length}</dt><dd>write-ups</dd></div>
+          <div><dt>{count('cve')}</dt><dd>CVEs</dd></div>
+          <div><dt>{count('ctf')}</dt><dd>CTF solves</dd></div>
+        </dl>
+      </div>
+
+      <div class="term" aria-hidden="true">
+        <div class="term-bar"><i></i><i></i><i></i><span>operator@lab: ~</span></div>
+        <pre id="term"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap wrap-wide" id="posts">
+    <div class="tools">
+      <div class="filters" id="filters">
+        <button class="on" data-f="all">all</button>
+        <button data-f="research">research</button>
+        <button data-f="cve">cve</button>
+        <button data-f="ctf">ctf</button>
+        <button data-f="technique">technique</button>
+      </div>
+      <label class="search">
+        <span class="sr">Search posts</span>
+        <input id="q" type="search" placeholder="search posts, tags, CVE ids  ( / )" autocomplete="off" />
+      </label>
+    </div>
+
+    <ul class="posts" id="list">
+      {posts.map((post) => <PostRow post={post} />)}
+    </ul>
+    <p class="empty" id="noresults" hidden>// no posts match that filter</p>
+  </section>
+</Base>
+
+<script>
+  // ---- filter + search ----
+  const list = document.getElementById('list');
+  const rows = Array.from(document.querySelectorAll<HTMLLIElement>('.post-row'));
+  const filterBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('#filters button'));
+  const q = document.getElementById('q') as HTMLInputElement | null;
+  const noResults = document.getElementById('noresults');
+  let activeFilter = 'all';
+
+  function apply() {
+    const term = (q?.value || '').trim().toLowerCase();
+    let shown = 0;
+    rows.forEach((row) => {
+      const catOk = activeFilter === 'all' || row.dataset.cat === activeFilter;
+      const searchOk = !term || (row.dataset.search || '').includes(term);
+      const ok = catOk && searchOk;
+      row.hidden = !ok;
+      if (ok) shown++;
+    });
+    if (noResults) noResults.hidden = shown !== 0;
+  }
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      activeFilter = btn.dataset.f || 'all';
+      apply();
+    });
+  });
+  q?.addEventListener('input', apply);
+
+  // "/" focuses search
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== q) {
+      e.preventDefault();
+      q?.focus();
+    }
+  });
+
+  // ---- terminal typing animation ----
+  const termEl = document.getElementById('term');
+  if (termEl && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const lines = [
+      { t: '$ ', c: 'nmap -sV --top-ports 1000 target', cls: '' },
+      { t: '', c: '  22/tcp  open  ssh      OpenSSH 9.6', cls: 'c-out' },
+      { t: '', c: '  443/tcp open  https    nginx', cls: 'c-out' },
+      { t: '$ ', c: 'ffuf -w wordlist.txt -u https://target/FUZZ', cls: '' },
+      { t: '', c: '  /admin        [302]', cls: 'c-out' },
+      { t: '', c: '  /.git/config  [200]  <-- interesting', cls: 'c-out' },
+      { t: '# ', c: 'source leak -> creds -> foothold', cls: 'c-com' },
+    ];
+    let li = 0, ci = 0, out = '';
+    function tick() {
+      if (li >= lines.length) {
+        setTimeout(() => { out = ''; li = 0; ci = 0; termEl!.innerHTML = ''; tick(); }, 3500);
+        return;
+      }
+      const line = lines[li];
+      if (ci === 0) out += `<span class="${line.cls}">${line.t}`;
+      if (ci < line.c.length) {
+        out += line.c[ci] === '<' ? '&lt;' : line.c[ci];
+        ci++;
+        termEl!.innerHTML = out + '</span>▋';
+        setTimeout(tick, 22 + Math.random() * 30);
+      } else {
+        out += '</span>\n';
+        li++; ci = 0;
+        termEl!.innerHTML = out + '▋';
+        setTimeout(tick, 420);
+      }
+    }
+    tick();
+  }
+</script>

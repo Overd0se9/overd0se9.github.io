@@ -1,73 +1,53 @@
-# Offensive security blog — Jekyll, GitHub Pages ready
+# overd0se9.github.io
 
-Dark "ink & ember" theme: deep indigo background, ember-orange / cyan accents,
-Space Grotesk + JetBrains Mono. Built to run on GitHub Pages with zero build
-step on your side (GitHub builds it for you).
+Personal offensive-security blog — research, CVE disclosures, CTF write-ups and techniques.
+Built with [Astro](https://astro.build), deployed to GitHub Pages via GitHub Actions.
 
-## 1. Put it on GitHub
+## Local development
 
-Create a repo named **exactly** `Overd0se9.github.io`, then push these
-files to its `main` branch. GitHub Pages will build and serve it
-automatically at `https://overd0se9.github.io`.
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # output to ./dist
+npm run preview  # serve the built site locally
+```
 
-`_config.yml` is already set up for this repo (`title: overd0se`,
-`github: Overd0se9`, `url: https://overd0se9.github.io`) — no changes
-needed to go live. Just fill in `twitter`/`linkedin`/`email` if you want
-those links in the footer.
+## Writing a post
 
-## 2. Edit `_config.yml`
-
-## 3. Write a post
-
-Add a file to `_posts/` named `YYYY-MM-DD-slug.md`:
+Add a Markdown/MDX file under `src/content/posts/`. The filename becomes the URL slug
+(`/posts/<filename>/`). Frontmatter schema:
 
 ```yaml
 ---
-layout: post
-title: "Your title"
+title: "Post title"
+date: 2026-10-13
 category: research   # research | cve | ctf | technique
+excerpt: "One-line summary shown in listings and meta description."
 tags: [tag-one, tag-two]
-excerpt: "One or two sentences — used on the homepage card and in SEO."
-# optional, shown in the post header if set:
-cve: "CVE-2026-XXXXX"
-platform: "Hack The Box"
-difficulty: Medium   # Easy | Medium | Hard | Insane
+draft: false         # true = excluded from build
+# optional, category-specific:
+cve: "CVE-2026-1234" # for category: cve
+platform: "Hack The Box"   # for category: ctf
+difficulty: "Hard"         # for category: ctf
+updated: 2026-10-20        # optional "last updated" date
 ---
-
-Your markdown content here. Headings become the sidebar table of contents
-automatically. Fenced code blocks get syntax highlighting for free.
 ```
 
-Delete the three sample posts in `_posts/` once you have your own.
+## Deployment
 
-## 4. Run it locally (optional)
+Push to `main` → the `Deploy to GitHub Pages` workflow builds and publishes automatically.
 
-```bash
-bundle install
-bundle exec jekyll serve
-```
-
-Visit `http://localhost:4000`.
+> **One-time repo setting:** Settings → Pages → *Build and deployment* → **Source: GitHub Actions**.
 
 ## Structure
 
 ```
-_config.yml        site settings
-_layouts/           default.html (shell), post.html (article template)
-_posts/             your writing, one file per post
-assets/css/style.css  the whole theme
-assets/js/main.js     terminal intro, search/filter, table of contents
-index.html          homepage: hero + post grid with filter & search
-archive/index.html  full chronological list
-about/index.md       about page — edit this
-404.html
+src/
+  consts.ts            site config + categories
+  content.config.ts    post collection schema
+  content/posts/       the posts
+  components/          Header, Footer, BaseHead, PostRow
+  layouts/             Base, Post
+  pages/               index, about, archive, tags, posts/[...slug], rss.xml, 404
+  styles/global.css    the theme
 ```
-
-## Notes
-
-- The homepage filter buttons map to `category:` in each post's front
-  matter (`research`, `cve`, `ctf`, `technique`). Add a new category by
-  adding a button in `index.html`'s `#filters` and a matching `.chip.c-x`
-  / `.card.k-x` rule in `style.css` if you want it color-coded.
-- Press `/` on the homepage to jump into search.
-- RSS feed is generated automatically at `/feed.xml` via `jekyll-feed`.

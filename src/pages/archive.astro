@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { CATEGORIES } from '../consts';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const byYear = new Map<number, typeof posts>();
+for (const p of posts) {
+  const y = new Date(p.data.date).getFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(p);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<Base title="Archive">
+  <section class="wrap page">
+    <h1>Archive</h1>
+    {years.map((y) => (
+      <>
+        <h3 class="arch-year">{y}</h3>
+        <ul class="arch">
+          {byYear.get(y)!.map((p) => {
+            const iso = new Date(p.data.date).toISOString().slice(5, 10);
+            return (
+              <li>
+                <time>{iso}</time>
+                <a href={`/posts/${p.id}/`}>{p.data.title}</a>
+                <span class={`chip c-${p.data.category}`}>{CATEGORIES[p.data.category].label}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    ))}
+  </section>
+</Base>

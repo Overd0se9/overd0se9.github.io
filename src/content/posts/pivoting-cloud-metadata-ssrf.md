@@ -1,9 +1,9 @@
 ---
-layout: post
 title: "Technique: pivoting through cloud metadata services in SSRF chains"
+date: 2026-05-20
 category: technique
-tags: [ssrf, cloud, aws, imds, tradecraft]
 excerpt: "A field checklist for turning a blind SSRF into credential theft across AWS, Azure and GCP metadata endpoints, and what it looks like from the defender's side."
+tags: [ssrf, cloud, aws, imds, tradecraft]
 ---
 
 ## Why this still works
