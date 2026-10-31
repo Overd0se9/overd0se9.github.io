@@ -1,21 +1,23 @@
 ---
-import { CATEGORIES } from '../consts';
+import { CATEGORIES, readingMinutes } from '../consts';
+import { caseNumber, causeOf, isoDate } from '../lib/cases';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props { post: CollectionEntry<'posts'>; }
 const { post } = Astro.props;
 const { title, date, category, excerpt, tags } = post.data;
-const d = new Date(date);
-const iso = d.toISOString().slice(0, 10);
+const cat = CATEGORIES[category];
+const no = await caseNumber(post);
 const searchBlob = [title, excerpt, category, post.data.cve ?? '', tags.join(' ')].join(' ').toLowerCase();
 ---
 
 <li class="post-row" data-cat={category} data-search={searchBlob}>
-  <time datetime={iso}>{iso}</time>
-  <div class="pr-main">
-    <a href={`/posts/${post.id}/`} style="text-decoration:none">
-      <p class="pr-title">{title}</p>
-    </a>
+  <div class="case-tag">
+    <span class="no">Case #{no}</span>
+    <span class="cls">{cat.numeral} · {cat.label}</span>
+  </div>
+  <div>
+    <a class="pr-link" href={`/posts/${post.id}/`}><h3 class="pr-title">{title}</h3></a>
     <p class="pr-ex">{excerpt}</p>
     {tags.length > 0 && (
       <div class="pr-tags">
@@ -23,5 +25,9 @@ const searchBlob = [title, excerpt, category, post.data.cve ?? '', tags.join(' '
       </div>
     )}
   </div>
-  <span class={`chip c-${category}`}>{CATEGORIES[category].label}</span>
+  <dl class="case-dl">
+    <div><dt>Time of death</dt><dd><time datetime={isoDate(date)}>{isoDate(date)}</time></dd></div>
+    <div><dt>Cause</dt><dd>{causeOf(post)}</dd></div>
+    <div><dt>Exam time</dt><dd>{readingMinutes(post.body)} min</dd></div>
+  </dl>
 </li>

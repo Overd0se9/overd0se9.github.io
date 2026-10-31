@@ -11,7 +11,7 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeComp
 <Base title="Tags">
   <section class="wrap page">
     <h1>Tags</h1>
-    <p style="color:var(--fg-dim)">{tags.length} tags across {posts.length} posts.</p>
+    <p style="color:var(--dust)">{tags.length} tags across {posts.length} posts.</p>
     <div class="cloud">
       {tags.map(([t, n]) => (
         <a href={`/tags/${t}/`}>#{t} <span class="n">{n}</span></a>

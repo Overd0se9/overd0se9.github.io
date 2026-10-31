@@ -25,7 +25,7 @@ const { tag, posts } = Astro.props;
 <Base title={`#${tag}`}>
   <section class="wrap wrap-wide page">
     <h1>#{tag}</h1>
-    <p style="color:var(--fg-dim)">{posts.length} post{posts.length === 1 ? '' : 's'} tagged <code>{tag}</code>. <a href="/tags">← all tags</a></p>
+    <p style="color:var(--dust)">{posts.length} post{posts.length === 1 ? '' : 's'} tagged <code>{tag}</code>. <a href="/tags">← all tags</a></p>
     <ul class="posts">
       {posts.map((post) => <PostRow post={post} />)}
     </ul>

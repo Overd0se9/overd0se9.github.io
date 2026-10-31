@@ -46,8 +46,9 @@ src/
   consts.ts            site config + categories
   content.config.ts    post collection schema
   content/posts/       the posts
-  components/          Header, Footer, BaseHead, PostRow
+  components/          Header, Footer, BaseHead, PostRow, Ecg (heart monitor)
+  lib/cases.ts         post sorting, case numbers, "cause" line
   layouts/             Base, Post
   pages/               index, about, archive, tags, posts/[...slug], rss.xml, 404
-  styles/global.css    the theme
+  styles/global.css    the "Flatline" theme
 ```

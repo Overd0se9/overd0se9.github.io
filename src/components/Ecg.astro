@@ -1,0 +1,95 @@
+---
+// Heart-monitor trace: beats, weakens, flatlines, loops. Static trace when reduced motion is on.
+---
+<div class="monitor mono-label" aria-hidden="true">
+  <span>Lead II · 25 mm/s</span>
+  <span>HR <b id="hr">72</b> bpm</span>
+  <span id="rhythm">Rhythm: sinus</span>
+</div>
+<canvas id="ecg" aria-hidden="true"></canvas>
+
+<script>
+  const c = document.getElementById('ecg') as HTMLCanvasElement | null;
+  const ctx = c?.getContext('2d');
+  const hrEl = document.getElementById('hr');
+  const rhythm = document.getElementById('rhythm');
+  if (c && ctx) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let w = 0, h = 0;
+    const size = () => {
+      const dpr = devicePixelRatio || 1;
+      w = c.clientWidth; h = c.clientHeight;
+      c.width = w * dpr; c.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    size();
+    addEventListener('resize', size);
+
+    // one PQRST complex over phase 0..1 (negative = up on screen)
+    const beat = (p: number) => {
+      if (p < 0.10) return Math.sin((p / 0.10) * Math.PI) * -0.08;
+      if (p < 0.16) return 0;
+      if (p < 0.19) return ((p - 0.16) / 0.03) * 0.12;
+      if (p < 0.22) return 0.12 - ((p - 0.19) / 0.03) * 1.1;
+      if (p < 0.26) return -0.98 + ((p - 0.22) / 0.04) * 1.2;
+      if (p < 0.28) return 0.22 - ((p - 0.26) / 0.02) * 0.22;
+      if (p < 0.45) return Math.sin(((p - 0.28) / 0.17) * Math.PI) * -0.2;
+      return 0;
+    };
+    const SPEED = 140, PERIOD = 0.85, CYCLE = 9, FLAT = 3.2, WEAK = 4.6;
+    const sample = (t: number) => {
+      const tc = t % CYCLE;
+      if (tc > CYCLE - FLAT) return { y: 0, state: 'flat' };
+      const weak = tc > CYCLE - WEAK;
+      return { y: beat((tc % PERIOD) / PERIOD) * (weak ? 0.45 : 1), state: weak ? 'weak' : 'ok' };
+    };
+
+    const pts: { x: number; y: number }[] = [];
+    let x = 0, t = 0, last = performance.now();
+
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(217,212,204,.06)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < w; gx += 25) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+      for (let gy = 0; gy < h; gy += 25) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+      const mid = h * 0.58, A = h * 0.5;
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1], b = pts[i];
+        if (b.x < a.x) continue;
+        ctx.strokeStyle = `rgba(224,30,43,${(i / pts.length) ** 1.5})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(a.x, mid + a.y * A); ctx.lineTo(b.x, mid + b.y * A); ctx.stroke();
+      }
+      const p = pts[pts.length - 1];
+      if (p) {
+        ctx.fillStyle = '#ff4450'; ctx.shadowColor = '#e01e2b'; ctx.shadowBlur = 14;
+        ctx.beginPath(); ctx.arc(p.x, mid + p.y * A, 3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      }
+    };
+
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now; t += dt;
+      const steps = Math.max(1, Math.ceil(SPEED * dt));
+      for (let i = 0; i < steps; i++) {
+        const s = sample(t - dt + (dt * i) / steps);
+        x = (x + (SPEED * dt) / steps) % Math.max(w, 1);
+        pts.push({ x, y: s.y });
+      }
+      while (pts.length > w * 0.9) pts.shift();
+      const s = sample(t);
+      if (hrEl) hrEl.textContent = s.state === 'flat' ? '0' : s.state === 'weak' ? '38' : '72';
+      if (rhythm) rhythm.textContent = s.state === 'flat' ? 'Rhythm: asystole' : 'Rhythm: sinus';
+      draw();
+      requestAnimationFrame(frame);
+    };
+
+    if (reduce) {
+      for (let i = 0; i < w; i++) pts.push({ x: i, y: beat((i / 120) % 1) });
+      draw();
+    } else {
+      requestAnimationFrame(frame);
+    }
+  }
+</script>

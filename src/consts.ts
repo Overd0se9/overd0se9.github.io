@@ -10,10 +10,14 @@ export const SITE = {
 } as const;
 
 export const CATEGORIES = {
-  research: { label: 'Research', blurb: 'Deep dives into bug classes and attack surface' },
-  cve: { label: 'CVEs', blurb: 'Disclosures, root-cause analysis and patches' },
-  ctf: { label: 'CTF', blurb: 'Write-ups with the dead ends left in' },
-  technique: { label: 'Techniques', blurb: 'Tradecraft, tooling and detection notes' },
+  research: { label: 'Research', numeral: 'I', blurb: 'Deep dives into bug classes and attack surface' },
+  cve: { label: 'CVEs', numeral: 'II', blurb: 'Disclosures, root-cause analysis and patches' },
+  ctf: { label: 'CTF', numeral: 'III', blurb: 'Write-ups with the dead ends left in' },
+  technique: { label: 'Techniques', numeral: 'IV', blurb: 'Tradecraft, tooling and detection notes' },
 } as const;
 
 export type Category = keyof typeof CATEGORIES;
+
+/** Words-per-minute reading estimate shared by listings and post pages. */
+export const readingMinutes = (body?: string) =>
+  Math.max(1, Math.round((body?.split(/\s+/).length ?? 0) / 200));
