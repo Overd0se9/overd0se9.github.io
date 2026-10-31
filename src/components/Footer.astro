@@ -5,10 +5,7 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="wrap wrap-wide">
-    <span>© {year} {SITE.author} · built with Astro</span>
-    <span>
-      <a href="/rss.xml">rss</a> ·
-      <a href={SITE.github} target="_blank" rel="noopener">github</a>
-    </span>
+    <span>© {year} {SITE.author} · <a href={SITE.github} target="_blank" rel="noopener">github</a> · <a href="/rss.xml">rss</a></span>
+    <span>No pulse. No patch.</span>
   </div>
 </footer>
